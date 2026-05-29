@@ -8,14 +8,37 @@ function App() {
   const totalPages = 300;
   const percent = Math.min(Math.round((pages / totalPages) * 100), 100);
   
-
+  const bookArray = [
+    {
+      title: "The Song of Achilles",
+      author: "Madeline Miller",
+      cover:
+        "https://madelinemiller.com/wp-content/uploads/2026/01/AchillesDeluxe-front.jpg",
+    },
+    {
+      title: "Circe",
+      author: "Madeline Miller",
+      cover:
+        "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1565909496i/35959740.jpg",
+    },
+    {
+      title: "Martyr",
+      author: "Kaveh Akbar",
+      cover:
+        "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1683818219l/139400713.jpg",
+    },
+    {
+      title: "Crying in H Mart",
+      author: "Michelle Zauner",
+      cover:
+        "https://www.jacksonville.com/gcdn/presto/2021/08/10/NFTU/35662059-4725-4752-a9dd-75f0fa06626a-81-zGtxNJS.jpg?crop=1687,2250,x0,y0",
+    },
+  ];
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      
       {/* current book half */}
-      <div className="w-1/3 flex flex-col items-center justify-center gap-8 mr-20">
-        
+      <div className="w-1/4 flex flex-col items-center justify-center gap-8 mr-20">
         {/* name's library */}
         <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-10 text-center w-[80%]">
           <h1 className="text-3xl font-medium mb-4">Bobby's Library</h1>
@@ -66,27 +89,52 @@ function App() {
           <h1 className="text-3xl font-medium mb-4">Bobby's Library</h1>
           <button
             type="button"
-            onClick={() => setCount((count) => count + 1)}
             className="px-6 py-2.5 bg-gray-300 rounded-lg border border-2xl border-black text-sm font-medium hover:bg-gray-500 transition-colors mb-4"
           >
-            Book Count is {count}
+            Book Count is {bookArray.length}
           </button>
 
           {/* bookshelf grid */}
-          <div className="grid grid-cols-4 gap-2 p-2">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-gray-400 rounded-xl flex flex-col items-center gap-3 p-4 hover:bg-gray-500 transition-colors"
-              >
-                <div className="w-16 h-24 bg-gray-300 rounded-lg" />
-                <div className="h-4 w-2/4 bg-gray-300 rounded" />
-              </div>
-            ))}
+          <div className="grid grid-cols-5 gap-2 p-2">
+            {Array.from({ length: 20 }).map(
+              (_, i) => {
+                const book = bookArray[i];
+                return (
+                  <div
+                    key={i}
+                    className="bg-gray-400 rounded-xl flex flex-col items-center gap-3 p-4 hover:bg-gray-500 transition-colors"
+                  >
+                    <div className="w-16 h-24 bg-gray-300 rounded-lg flex items-end justify-center pb-1">
+                      {book && (
+                        <span className="text-xs text-center text-gray-600 leading-tight px-1">
+                          <img 
+                            src={book.cover}
+                            alt={book.title}
+                          />
+                        </span>
+                      )}
+                    </div>
+                    <div className="h-4 w-3/4 bg-gray-300 rounded flex items-center justify-center">
+                      {book && (
+                        <span className="text-xs text-gray-600 truncate px-1">
+                          {book.title}
+                        </span>
+                      )}
+                    </div>
+                    <div className="h-4 w-3/4 bg-gray-300 rounded flex items-center justify-center">
+                      {book && (
+                        <span className="text-xs text-gray-600 truncate px-1">
+                          {book.author}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              },
+            )}
           </div>
         </div>
       </div>
-
     </div>
   );
 }
