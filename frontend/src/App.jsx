@@ -8,6 +8,10 @@ function App() {
   const [bookAuthor, setBookAuthor] = useState("Susanna Clarke");
   const totalPages = 300;
   const percent = Math.min(Math.round((pages / totalPages) * 100), 100);
+  const [query, setQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState("");
   
   const bookArray = [
     {
@@ -36,17 +40,67 @@ function App() {
     },
   ];
 
+  const handleChange = (e) => {
+    setQuery(e.target.value);
+    if (!e.target.value.trim()) {
+      setSearchResults([]);
+      setSearchError("");
+    }
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+
+    setIsSearching(true);
+    setSearchError("");
+    setSearchResults([]);
+
+    try {
+      const res = await fetch(
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5&fields=title,author_name,cover_i`,
+      );
+      if (!res.ok) throw new Error("Search failed");
+      const data = await res.json();
+
+      if (!data.docs || data.docs.length === 0) {
+        setSearchError("No books found.");
+        return;
+      }
+
+      const results = data.docs.map((item) => ({
+        title: item.title || "Unknown Title",
+        author: item.author_name?.[0] || "Unknown Author",
+        cover: item.cover_i
+          ? `https://covers.openlibrary.org/b/id/${item.cover_i}-M.jpg`
+          : null,
+      }));
+
+      setSearchResults(results);
+    } catch (err) {
+      setSearchError("Something went wrong. Please try again.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+   const addBook = (book) => {
+     setBookArray((prev) => [...prev, book]);
+     setSearchResults([]);
+     setQuery("");
+   };
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       {/* current book half */}
-      <div className="w-1/4 flex flex-col items-center justify-center gap-8 mr-20">
+      <div className="w-1/4 flex flex-col items-center justify-center gap-8">
         {/* name's library */}
-        <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-10 text-center w-[80%]">
+        <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-6 text-center w-[80%]">
           <h1 className="text-3xl font-medium mb-4">Bobby's Library</h1>
         </div>
 
         {/* currently reading */}
-        <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-10 text-center w-[80%]">
+        <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-6 text-center w-[80%]">
           <h1 className="text-3xl font-medium mb-4">Currently Reading</h1>
           <div className="flex flex-col justify-center mb-4">
             <img
@@ -60,7 +114,7 @@ function App() {
         </div>
 
         {/* progress */}
-        <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-10 w-[80%]">
+        <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-6 text-center w-[80%]">
           <h1 className="text-3xl font-medium mb-4">Reading Progress</h1>
           <div className="flex items-center gap-3 mb-4">
             <input
@@ -88,7 +142,7 @@ function App() {
       {/* bookshelf half */}
       <div className="w-2/4 ml-20">
         <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-10 text-center">
-          <h1 className="text-3xl font-medium mb-4">Bobby's Library</h1>
+          <h1 className="text-3xl font-medium mb-4">Bookshelf</h1>
           <button
             type="button"
             className="px-6 py-2.5 bg-gray-300 rounded-lg border border-2xl border-black text-sm font-medium hover:bg-gray-500 transition-colors mb-4"
@@ -131,6 +185,59 @@ function App() {
             })}
           </div>
         </div>
+      </div>
+
+      {/* book search */}
+      <div className="min-h-screen w-1/5 ml-20">
+        <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-8 text-center mt-100 w-[80%]">
+          <h1 className="text-3xl font-medium mb-4">Add Book</h1>
+          <form onSubmit={handleSearch}>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={query}
+                onChange={handleChange}
+                placeholder="Search for book..."
+                className="flex-1 border bg-gray-300 rounded-xl p-2 text-sm"
+              />
+            </div>
+          </form>
+        </div>
+
+        {searchError && (
+          <p className="text-sm text-red-700 mt-2">{searchError}</p>
+        )}
+
+        {/* results dropdown */}
+        {searchResults.length > 0 && (
+          <div className="mt-3 flex flex-col gap-2 w-[80%]">
+            {searchResults.map((book, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 bg-gray-300 rounded-xl p-2 ml-[10%] mr-[10%] hover:bg-gray-500 transition-colors cursor-pointer text-left"
+                onClick={() => addBook(book)}
+              >
+                {book.cover ? (
+                  <img
+                    src={book.cover}
+                    alt={book.title}
+                    className="w-8 h-12 object-cover rounded"
+                  />
+                ) : (
+                  <div className="w-8 h-12 bg-gray-400 rounded flex items-center justify-center text-xs text-gray-600">
+                    ?
+                  </div>
+                )}
+                <div className="overflow-hidden">
+                  <p className="text-xs font-medium truncate">{book.title}</p>
+                  <p className="text-xs text-gray-600 truncate">
+                    {book.author}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
