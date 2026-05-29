@@ -4,7 +4,8 @@ function App() {
   const [count, setCount] = useState(0);
   const [pages, setPages] = useState(0);
   const [bookImage, setBookImage] = useState("/PiranesiCover.jpg");
-  const [bookName, setBookName] = useState("Piranesi by Susanna Clarke");
+  const [bookName, setBookName] = useState("Piranesi");
+  const [bookAuthor, setBookAuthor] = useState("Susanna Clarke");
   const totalPages = 300;
   const percent = Math.min(Math.round((pages / totalPages) * 100), 100);
   
@@ -53,7 +54,8 @@ function App() {
               alt="Book cover"
               className="w-24 h-36 object-cover rounded-lg shadow mx-auto mb-2"
             />
-            <p>{bookName}</p>
+            <p className="text-xl">{bookName}</p>
+            <p>{bookAuthor}</p>
           </div>
         </div>
 
@@ -96,42 +98,37 @@ function App() {
 
           {/* bookshelf grid */}
           <div className="grid grid-cols-5 gap-2 p-2">
-            {Array.from({ length: 20 }).map(
-              (_, i) => {
-                const book = bookArray[i];
-                return (
-                  <div
-                    key={i}
-                    className="bg-gray-400 rounded-xl flex flex-col items-center gap-3 p-4 hover:bg-gray-500 transition-colors"
-                  >
-                    <div className="w-16 h-24 bg-gray-300 rounded-lg flex items-end justify-center pb-1">
-                      {book && (
-                        <span className="text-xs text-center text-gray-600 leading-tight px-1">
-                          <img 
-                            src={book.cover}
-                            alt={book.title}
-                          />
-                        </span>
-                      )}
-                    </div>
-                    <div className="h-4 w-3/4 bg-gray-300 rounded flex items-center justify-center">
-                      {book && (
-                        <span className="text-xs text-gray-600 truncate px-1">
-                          {book.title}
-                        </span>
-                      )}
-                    </div>
-                    <div className="h-4 w-3/4 bg-gray-300 rounded flex items-center justify-center">
-                      {book && (
-                        <span className="text-xs text-gray-600 truncate px-1">
-                          {book.author}
-                        </span>
-                      )}
-                    </div>
+            {Array.from({ length: 20 }).map((_, i) => {
+              const book = bookArray[i];
+              return (
+                <div
+                  key={i}
+                  className="bg-gray-400 rounded-xl flex flex-col items-center gap-2 p-2 hover:bg-gray-500 transition-colors"
+                >
+                  <div className="w-20 h-30 bg-gray-300 rounded-lg flex items-end justify-center pb-1">
+                    {book && (
+                      <span className="text-xs text-center text-gray-600 leading-tight px-1">
+                        <img src={book.cover} alt={book.title} />
+                      </span>
+                    )}
                   </div>
-                );
-              },
-            )}
+                  <div className="h-4 w-3/4 bg-gray-300 rounded flex items-center justify-center">
+                    {book && (
+                      <span className="text-xs text-gray-600 truncate px-1">
+                        {book.title}
+                      </span>
+                    )}
+                  </div>
+                  <div className="h-3 w-3/5 bg-gray-300 rounded flex items-center justify-center">
+                    {book && (
+                      <span className="text-xs text-gray-600 truncate px-1">
+                        {book.author}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
