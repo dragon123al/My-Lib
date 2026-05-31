@@ -13,7 +13,7 @@ function App() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
   
-  const bookArray = [
+  const initialBooks = [
     {
       title: "The Song of Achilles",
       author: "Madeline Miller",
@@ -39,6 +39,9 @@ function App() {
         "https://www.jacksonville.com/gcdn/presto/2021/08/10/NFTU/35662059-4725-4752-a9dd-75f0fa06626a-81-zGtxNJS.jpg?crop=1687,2250,x0,y0",
     },
   ];
+
+  const [bookArray, setBookArray] = useState(initialBooks);
+
 
   const handleChange = (e) => {
     setQuery(e.target.value);
