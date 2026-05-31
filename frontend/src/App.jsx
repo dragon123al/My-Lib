@@ -3,10 +3,10 @@ import { useState } from "react";
 function App() {
   const [count, setCount] = useState(0);
   const [pages, setPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [bookImage, setBookImage] = useState("/PiranesiCover.jpg");
   const [bookName, setBookName] = useState("Piranesi");
   const [bookAuthor, setBookAuthor] = useState("Susanna Clarke");
-  const totalPages = 300;
   const percent = Math.min(Math.round((pages / totalPages) * 100), 100);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -130,7 +130,17 @@ function App() {
               className="w-20 px-3 py-2 rounded-lg bg-gray-300 text-center text-sm focus:outline-none"
               placeholder="0"
             />
-            <span className="text-sm">of {totalPages} pages</span>
+            <span className="text-sm">of</span>
+            <input
+              type="number"
+              min="0"
+              value={totalPages === 0 ? "" : totalPages}
+              onChange={(e) => setTotalPages(Number(e.target.value) || 0)}
+              onFocus={(e) => e.target.select()}
+              className="w-20 px-3 py-2 rounded-lg bg-gray-300 text-center text-sm focus:outline-none"
+              placeholder="0"
+            />
+            <span className="text-sm">pages</span>
             <span className="ml-auto text-sm font-medium">{percent}%</span>
           </div>
           <div className="w-full bg-gray-300 rounded-full h-3">
