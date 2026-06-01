@@ -12,7 +12,7 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
-  
+
   const initialBooks = [
     {
       title: "The Song of Achilles",
@@ -41,7 +41,6 @@ function App() {
   ];
 
   const [bookArray, setBookArray] = useState(initialBooks);
-
 
   const handleChange = (e) => {
     setQuery(e.target.value);
@@ -87,11 +86,22 @@ function App() {
     }
   };
 
-   const addBook = (book) => {
-     setBookArray((prev) => [...prev, book]);
-     setSearchResults([]);
-     setQuery("");
-   };
+  const addBook = (book) => {
+    setBookArray((prev) => [...prev, book]);
+    setSearchResults([]);
+    setQuery("");
+  };
+
+  
+  const removeBook = (book) => {
+    setBookArray((prev) => prev.filter((b) => b.title !== book.title));
+  };
+
+  const addToCurrent = (book) => {
+    setBookImage(book.cover);
+    setBookName(book.title);
+    setBookAuthor(book.author);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -172,11 +182,32 @@ function App() {
                   key={i}
                   className="bg-gray-400 rounded-xl flex flex-col items-center gap-2 p-2 hover:bg-gray-500 transition-colors"
                 >
-                  <div className="w-20 h-30 bg-gray-300 rounded-lg flex items-end justify-center pb-1">
+                  <div className="flex items-center">
+                    <div className="w-20 h-30 bg-gray-300 rounded-lg flex items-center justify-center">
+                      {book && (
+                        <img
+                          src={book.cover}
+                          alt={book.title}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      )}
+                    </div>
+
                     {book && (
-                      <span className="text-xs text-center text-gray-600 leading-tight px-1">
-                        <img src={book.cover} alt={book.title} />
-                      </span>
+                      <div className="flex flex-col ml-2">
+                        <button
+                          className="px-2 py-2 bg-red-500 rounded-full border border-2xl border-black text-sm font-medium hover:bg-red-300 transition-colors mb-4"
+                          onClick={() => removeBook(book)}
+                        >
+                          Del
+                        </button>
+                        <button 
+                          className="px-2 py-2 bg-blue-500 rounded-full border border-2xl border-black text-sm font-medium hover:bg-blue-300 transition-colors mb-4" 
+                          onClick={() => addToCurrent(book)}
+                        >
+                          Cur
+                        </button>
+                      </div>
                     )}
                   </div>
                   <div className="h-4 w-3/4 bg-gray-300 rounded flex items-center justify-center">
