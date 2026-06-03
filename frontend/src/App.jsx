@@ -3,10 +3,12 @@ import { useState } from "react";
 function App() {
   const [count, setCount] = useState(0);
   const [pages, setPages] = useState(0);
+  const [currentBook, setCurrentBook] = useState({
+    title: "Piranesi",
+    author: "Susanna Clarke",
+    cover: "/PiranesiCover.jpg",
+  });
   const [totalPages, setTotalPages] = useState(1);
-  const [bookImage, setBookImage] = useState("/PiranesiCover.jpg");
-  const [bookName, setBookName] = useState("Piranesi");
-  const [bookAuthor, setBookAuthor] = useState("Susanna Clarke");
   const percent = Math.min(Math.round((pages / totalPages) * 100), 100);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -97,10 +99,8 @@ function App() {
     setBookArray((prev) => prev.filter((b) => b.title !== book.title));
   };
 
-  const addToCurrent = (book) => {
-    setBookImage(book.cover);
-    setBookName(book.title);
-    setBookAuthor(book.author);
+  const removeCurrent = () => {
+    setCurrentBook(null);
   };
 
   return (
@@ -117,12 +117,18 @@ function App() {
           <h1 className="text-3xl font-medium mb-4">Currently Reading</h1>
           <div className="flex flex-col justify-center mb-4">
             <img
-              src={bookImage}
-              alt="Book cover"
+              src={currentBook?.cover || ""}
+              alt={currentBook?.title || ""}
               className="w-24 h-36 object-cover rounded-lg shadow mx-auto mb-2"
             />
-            <p className="text-xl">{bookName}</p>
-            <p>{bookAuthor}</p>
+            <p className="text-xl">{currentBook?.title || "Title"}</p>
+            <p>{currentBook?.author || "Author"}</p>
+            <button
+              className="px-2 py-2 bg-red-400 rounded-full border border-2xl border-black text-sm font-medium hover:bg-red-300 transition-colors mt-2 w-fit mx-auto"
+              onClick={() => removeCurrent()}
+            >
+              Remove
+            </button>
           </div>
         </div>
 
@@ -196,14 +202,14 @@ function App() {
                     {book && (
                       <div className="flex flex-col ml-2">
                         <button
-                          className="px-2 py-2 bg-red-500 rounded-full border border-2xl border-black text-sm font-medium hover:bg-red-300 transition-colors mb-4"
+                          className="px-2 py-2 bg-red-400 rounded-full border border-2xl border-black text-sm font-medium hover:bg-red-300 transition-colors mb-4"
                           onClick={() => removeBook(book)}
                         >
                           Del
                         </button>
-                        <button 
-                          className="px-2 py-2 bg-blue-500 rounded-full border border-2xl border-black text-sm font-medium hover:bg-blue-300 transition-colors mb-4" 
-                          onClick={() => addToCurrent(book)}
+                        <button
+                          className="px-2 py-2 bg-blue-400 rounded-full border border-2xl border-black text-sm font-medium hover:bg-blue-300 transition-colors mb-4"
+                          onClick={() => setCurrentBook(book)}
                         >
                           Cur
                         </button>
