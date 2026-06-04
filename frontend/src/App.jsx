@@ -16,6 +16,8 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
+  const [progress, setProgress] = useState({});
+
 
   const initialBooks = [
     {
@@ -113,6 +115,13 @@ function App() {
     setCurrentBooks((prev) => prev.filter((b) => b.title !== title));
   };
 
+  const updateProgress = (title, field, value) => {
+  setProgress(prev => ({
+    ...prev,
+    [title]: { ...prev[title], [field]: Number(value) || 0 }
+  }));
+};
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       {/* current book half */}
@@ -154,36 +163,61 @@ function App() {
         {/* progress */}
         <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-6 text-center w-[80%]">
           <h1 className="text-3xl font-medium mb-4">Reading Progress</h1>
-          <div className="flex items-center gap-3 mb-4">
-            <input
-              type="number"
-              min="0"
-              max={totalPages}
-              value={pages === 0 ? "" : pages}
-              onChange={(e) => setPages(Number(e.target.value) || 0)}
-              onFocus={(e) => e.target.select()}
-              className="w-20 px-3 py-2 rounded-lg bg-gray-300 text-center text-sm focus:outline-none"
-              placeholder="0"
-            />
-            <span className="text-sm">of</span>
-            <input
-              type="number"
-              min="0"
-              value={totalPages === 0 ? "" : totalPages}
-              onChange={(e) => setTotalPages(Number(e.target.value) || 0)}
-              onFocus={(e) => e.target.select()}
-              className="w-20 px-3 py-2 rounded-lg bg-gray-300 text-center text-sm focus:outline-none"
-              placeholder="0"
-            />
-            <span className="text-sm">pages</span>
-            <span className="ml-auto text-sm font-medium">{percent}%</span>
-          </div>
-          <div className="w-full bg-gray-300 rounded-full h-3">
-            <div
-              className="bg-gray-700 h-3 rounded-full transition-all duration-300"
-              style={{ width: `${percent}%` }}
-            />
-          </div>
+
+          {currentBooks.length === 0 && (
+            <p className="text-sm text-gray-600 italic">No current books.</p>
+          )}
+
+          {currentBooks.map((book) => {
+            const pages = progress[book.title]?.pages || 0;
+            const totalPages = progress[book.title]?.totalPages || 1;
+            const percent = Math.min(
+              Math.round((pages / totalPages) * 100),
+              100,
+            );
+
+            return (
+              <div key={book.title} className="mb-4">
+                <p className="text-sm font-medium mb-2">{book.title}</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <input
+                    type="number"
+                    min="0"
+                    max={totalPages}
+                    value={pages === 0 ? "" : pages}
+                    onChange={(e) =>
+                      updateProgress(book.title, "pages", e.target.value)
+                    }
+                    onFocus={(e) => e.target.select()}
+                    className="w-20 px-3 py-2 rounded-lg bg-gray-300 text-center text-sm focus:outline-none"
+                    placeholder="0"
+                  />
+                  <span className="text-sm">of</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={totalPages || ""}
+                    onChange={(e) =>
+                      updateProgress(book.title, "totalPages", e.target.value)
+                    }
+                    onFocus={(e) => e.target.select()}
+                    className="w-20 px-3 py-2 rounded-lg bg-gray-300 text-center text-sm focus:outline-none"
+                    placeholder="0"
+                  />
+                  <span className="text-sm">pages</span>
+                  <span className="ml-auto text-sm font-medium">
+                    {percent}%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-300 rounded-full h-3">
+                  <div
+                    className="bg-gray-700 h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
