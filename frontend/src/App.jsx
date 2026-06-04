@@ -3,11 +3,13 @@ import { useState } from "react";
 function App() {
   const [count, setCount] = useState(0);
   const [pages, setPages] = useState(0);
-  const [currentBook, setCurrentBook] = useState({
-    title: "Piranesi",
-    author: "Susanna Clarke",
-    cover: "/PiranesiCover.jpg",
-  });
+  const [currentBooks, setCurrentBooks] = useState([
+    {
+      title: "Piranesi",
+      author: "Susanna Clarke",
+      cover: "/PiranesiCover.jpg",
+    },
+  ]);
   const [totalPages, setTotalPages] = useState(1);
   const percent = Math.min(Math.round((pages / totalPages) * 100), 100);
   const [query, setQuery] = useState("");
@@ -99,8 +101,16 @@ function App() {
     setBookArray((prev) => prev.filter((b) => b.title !== book.title));
   };
 
-  const removeCurrent = () => {
-    setCurrentBook(null);
+  const addCurrentBook = (book) => {
+    setCurrentBooks((prev) => {
+      if (prev.find((b) => b.title === book.title)) return prev;
+      if (prev.length >= 3) return prev; 
+      return [...prev, book];
+    });
+  };
+
+  const removeCurrent = (title) => {
+    setCurrentBooks((prev) => prev.filter((b) => b.title !== title));
   };
 
   return (
@@ -115,20 +125,29 @@ function App() {
         {/* currently reading */}
         <div className="bg-gray-400 rounded-2xl shadow-sm border border-2xl p-6 text-center w-[80%]">
           <h1 className="text-3xl font-medium mb-4">Currently Reading</h1>
-          <div className="flex flex-col justify-center mb-4">
-            <img
-              src={currentBook?.cover || ""}
-              alt={currentBook?.title || ""}
-              className="w-24 h-36 object-cover rounded-lg shadow mx-auto mb-2"
-            />
-            <p className="text-xl">{currentBook?.title || "Title"}</p>
-            <p>{currentBook?.author || "Author"}</p>
-            <button
-              className="px-2 py-2 bg-red-400 rounded-full border border-2xl border-black text-sm font-medium hover:bg-red-300 transition-colors mt-2 w-fit mx-auto"
-              onClick={() => removeCurrent()}
-            >
-              Remove
-            </button>
+
+          {currentBooks.length === 0 && (
+            <p className="text-sm text-gray-600 italic">No current books.</p>
+          )}
+
+          <div className="flex gap-2 justify-center">
+            {currentBooks.map((book) => (
+              <div key={book.title} className="flex flex-col items-center">
+                <img
+                  src={book.cover || ""}
+                  alt={book.title || ""}
+                  className="w-20 h-30 object-cover rounded-lg shadow mx-auto mb-2"
+                />
+                <p className="font-bold">{book.title}</p>
+                <p>{book.author}</p>
+                <button
+                  className="px-2 py-2 bg-red-400 rounded-full border border-2xl border-black text-sm font-medium hover:bg-red-300 transition-colors mt-2 w-fit mx-auto"
+                  onClick={() => removeCurrent(book.title)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -209,7 +228,7 @@ function App() {
                         </button>
                         <button
                           className="px-2 py-2 bg-blue-400 rounded-full border border-2xl border-black text-sm font-medium hover:bg-blue-300 transition-colors mb-4"
-                          onClick={() => setCurrentBook(book)}
+                          onClick={() => addCurrentBook(book)}
                         >
                           Cur
                         </button>
